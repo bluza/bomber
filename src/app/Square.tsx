@@ -1,12 +1,11 @@
 import {useState} from "react";
 
-function Square({key, input}) {
-    const [value, setValue] = useState("x");
+function Square({input}) {
+    const [value, setValue] = useState("🌊");
     function handleClick(){
         setValue(input);
     }
-
-    return (<button className="squareButton" key = {key} onClick={handleClick}  
+    return (<button className="squareButton" onClick={handleClick}  
         onContextMenu={
             (e) => {
                 e.preventDefault();

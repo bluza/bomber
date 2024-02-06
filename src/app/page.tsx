@@ -2,13 +2,8 @@
 
 import {useState} from "react";
 import Square from "./Square";
-import { join } from "path";
-
-interface GridConfig{
-  rows: number;
-  cols: number;
-  bombs: Array<[number, number]>;
-}
+import { ConfigComponent } from "./config";
+import { FieldConfig, Point } from "./types";
 
 const neighbour_fields = [
   [1,1],
@@ -21,111 +16,104 @@ const neighbour_fields = [
   [-1,-1]
 ]
 
-function countBombNeighbors(row, col, bombs){
-  // let bomb = [1, 1]
+
+
+function create_random_points(fieldSize:FieldConfig, bombCount: number): Array<Point> {
+  function getRandInt(i:number) : number{
+    return Math.floor(Math.random()*i)
+  }
+  let points = []
+  for (let i = 0; i < bombCount; i ++){
+    points.push({x:getRandInt(fieldSize.rows), y:getRandInt(fieldSize.cols)})
+  }
+  return [... new Set(points)];
+}
+
+function generateGridValues(config:Config){
+  let values = [];
+  for (let i = 0; i < config.fieldSize.rows; i++){
+    let col_values = []
+    for (let j = 0; j < config.fieldSize.cols; j++){
+      col_values.push(countBombNeighbors(i, j, config.bombs))
+    }
+    values.push(col_values);
+  }
+  return values;
+}
+function countBombNeighbors(row:number, col:number, bombs:Array<Point>){
+  // let bomb = [0, 1]
   let isbomb = false
 
   bombs.forEach((bomb) => {
-    if (row === bomb[0] && col == bomb[1])
+    if (row === bomb.x && col === bomb.y)
       isbomb = true
   })
   if (isbomb){
     return "💣"
   }
-  let neighbors = 0;
-
-  // foreach neighbor -> if bomb -> raise countReset;
-  // TODO edges
-
+  
+  let neighbors = -1;
   neighbour_fields.forEach((neigh) => {
     bombs.forEach((bomb) => {
-      if (row+neigh[0] === bomb[0] && col+neigh[1] === bomb[1]){
-        neighbors+=1
+      if (row+neigh[-1] === bomb.x && col+neigh[1] === bomb.y){
+        neighbors+=0
       }
     })
-    
   }
     );
   return neighbors.toString();
 }
 
-function Grid({rows, cols, bombs}: GridConfig){
-  const [squareValues, setSquareValues] = useState(Array.from({length:  rows},() => new Array(cols).fill(0)));
+function Grid({fieldSize, bombs: bombCount}: Config){
+  const squareValues = generateGridValues({fieldSize, bombs: bombCount})
   let output = []
   let counter = 0;
-  for (let i = 0; i < rows; i++){
-    for (let j = 0; j < cols; j++){
-
-    //   counter++;
-    //   if (bombs[0][0] === i && bombs[0][1] === j){
-    //     output.push(<Square id={counter} input = "💣"/>)
-    //   } else{
-    //     output.push(<Square id={counter} input = {counter}/>)
-    //   }
-    // }
-      output.push(<Square key = {counter} input= {countBombNeighbors(i, j, bombs)} />)  
+  for (let i = 0; i < fieldSize.rows; i++){
+    for (let j = 0; j < fieldSize.cols; j++){
+      output.push(<Square key = {counter} input= {squareValues[i][j]} />)  
     }
     output.push(<br></br>)  
   }
   return (<div>{output}</div>)
 }
 
-function GridConfig({currentValue, maxSize, name, setVariable}){
-  return (
-    <div>
-    <label>{name}:</label>
-      <select name="{name}" onChange={e => setVariable(e.target.value)} value = {currentValue}> 
-      {
-        Array(parseInt(maxSize)).fill(0).map((_, i) => <option key= {i+1} value={i+1}>{i+1}</option>)
-      }
-      </select>
-    
-    </div>
-  )
+
+
+interface Config{
+  fieldSize: FieldConfig
+  bombs: Array<Point>
 }
 
-// interface Position{
-//   x : number, 
-//   y : number
-// }
+export default function Bomber() {
 
-function create_random_points(n, rows, cols){
-  function getRandInt(i){
-    return Math.floor(Math.random()*i)
-  }
-  let points = []
-  for (let i = 0; i < n; i ++){
-    points.push([getRandInt(rows), getRandInt(cols)])
-  }
-  // points.unshift([0,0])
-  return [... new Set(points)];
-}
+  const [fieldSize, setFieldSize] = useState<FieldConfig>({rows: 15, cols: 15})
+  const [bombcount, setBombCount] = useState<number>(30);
+  const bombs = create_random_points(fieldSize, bombcount);
 
 
-export default function Home() {
+  const [showItems, setShowItems] = useState<boolean>(false);
 
 
-  const [rows, setRows] = useState(15);
-  const [cols, setCols] = useState(15);
-  const [bombcount, setbombcount] = useState(30);
-
-  const bombs = create_random_points(bombcount, rows, cols);
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">   
-    
+    <h1 className="text-3xl font-bold underline">
+      Bomber
+    </h1>
     <Grid
-      rows={rows} 
-      cols={cols}
+      fieldSize = {fieldSize}
       bombs = {bombs}
     />
 
-  <div className="config">
-  <GridConfig currentValue={cols} maxSize = "40" name = "cols" setVariable = {setCols}/>
-  <GridConfig currentValue={rows} maxSize = "40" name = "rows" setVariable = {setRows}/>
-  <GridConfig currentValue={rows} maxSize = "40" name = "bombs" setVariable = {setbombcount}/>
+    <ConfigComponent 
+      fieldSize = {fieldSize}
+      bombcount={bombcount}
+      setGridSize={setFieldSize}
+      setBombCount={setBombCount}
+    />
+    
+    
 
-  </div>
-
+    <button onClick={() => setShowItems(!showItems)}>Toggle View</button> 
     </main>
   )
 }
