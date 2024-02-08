@@ -1,34 +1,33 @@
 import React, {useRef, useState} from "react";
 import { FieldConfig,  Point } from "./types";
 
-
-function GridSelect({maxSize, name, fieldref}: {maxSize:string, name: string, fieldref:  React.MutableRefObject<number>}){
-    
-    return (
-        <>
-        <p>
-        <label>{name}:</label>
-        <select className="" name={name} id={name} ref = {fieldref}>
-        {Array(parseInt(maxSize)).fill(0).map((_, i) => <option key= {i+1} value={i+1}>{i+1}</option>)}
-        </select>
-        </p>
-        
-        </>
-    )
-}
-
 function ConfigHelper({fieldSize, bombs}: {fieldSize: FieldConfig, bombs: Array<Point>}){
   return( 
     <div>
     <label>Bomb Locations</label>
     <ul>
-      {bombs.map((bomb) => <li>{bomb.x}, {bomb.y}</li>)}
+      { bombs.map((bomb) => <li>{bomb.x}, {bomb.y}</li>) }
     </ul>
     <label>FieldSize</label>
     <p>rows: {fieldSize.rows}</p>
     <p>cols: {fieldSize.cols}</p>
     </div>
   )
+}
+
+function GridSelect({maxSize, name, fieldref}: {maxSize:string, name: string, fieldref:  React.MutableRefObject<number>}){
+    
+    return (
+      <>
+        <p>
+          <label>{name}:</label>
+          <select className="float-right" name={name} id={name} ref = {fieldref}>
+            {Array(parseInt(maxSize)).fill(0).map((_, i) => <option key= {i+1} value={i+1}>{i+1}</option>)}
+          </select>
+        </p>
+        
+      </>
+    )
 }
 
 interface FullConfig{
@@ -50,11 +49,11 @@ export function ConfigComponent({fieldSize, bombcount, setGridSize, setBombCount
   }
 
   return (
-  <div className="content-center rounded border-4 bg-gray-200 ">
+  <div className="rounded bg-gray-400 w-3/12 p-4 m-1">
     <form onSubmit={handleSubmit} className="text-xl">
-      <GridSelect maxSize = "15" name = "bombs" fieldref = {bombsRef} />
-      <GridSelect maxSize = "15" name = "cols" fieldref = {colRef} />
-      <GridSelect maxSize = "15" name = "rows" fieldref = {rowRef} />
+      <GridSelect maxSize = "15" name = "Bombs" fieldref = {bombsRef} />
+      <GridSelect maxSize = "15" name = "Cols" fieldref = {colRef} />
+      <GridSelect maxSize = "15" name = "Rows" fieldref = {rowRef} />
       <button type="submit" className="bg-gray-500 rounded-md p-2 m-1 hover:bg-gray-600"> Render</button>
     </form>
     <hr></hr>

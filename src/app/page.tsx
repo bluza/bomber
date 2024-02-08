@@ -18,6 +18,11 @@ const neighbour_fields = [
 
 
 
+interface Config{
+  fieldSize: FieldConfig
+  bombs: Array<Point>
+}
+
 function create_random_points(fieldSize:FieldConfig, bombCount: number): Array<Point> {
   function getRandInt(i:number) : number{
     return Math.floor(Math.random()*i)
@@ -27,6 +32,27 @@ function create_random_points(fieldSize:FieldConfig, bombCount: number): Array<P
     points.push({x:getRandInt(fieldSize.rows), y:getRandInt(fieldSize.cols)})
   }
   return [... new Set(points)];
+}
+
+
+function countBombNeighbors(row:number, col:number, bombs:Array<Point>){
+  let isbomb = false
+  bombs.forEach((bomb) => {
+    if (row === bomb.x && col === bomb.y)
+      isbomb = true
+  })
+  if (isbomb){
+    return "💣"
+  }
+  
+  let neighbors = 0;
+  neighbour_fields.forEach((neigh) => {
+    bombs.forEach((bomb) => {
+      if (row+neigh[0] === bomb.x && col+neigh[1] === bomb.y){
+        neighbors+=1
+      }
+    })});
+  return neighbors.toString();
 }
 
 function generateGridValues(config:Config){
@@ -39,29 +65,6 @@ function generateGridValues(config:Config){
     values.push(col_values);
   }
   return values;
-}
-function countBombNeighbors(row:number, col:number, bombs:Array<Point>){
-  // let bomb = [0, 1]
-  let isbomb = false
-
-  bombs.forEach((bomb) => {
-    if (row === bomb.x && col === bomb.y)
-      isbomb = true
-  })
-  if (isbomb){
-    return "💣"
-  }
-  
-  let neighbors = -1;
-  neighbour_fields.forEach((neigh) => {
-    bombs.forEach((bomb) => {
-      if (row+neigh[-1] === bomb.x && col+neigh[1] === bomb.y){
-        neighbors+=0
-      }
-    })
-  }
-    );
-  return neighbors.toString();
 }
 
 function Grid({fieldSize, bombs: bombCount}: Config){
@@ -77,17 +80,10 @@ function Grid({fieldSize, bombs: bombCount}: Config){
   return (<div>{output}</div>)
 }
 
-
-
-interface Config{
-  fieldSize: FieldConfig
-  bombs: Array<Point>
-}
-
 export default function Bomber() {
 
-  const [fieldSize, setFieldSize] = useState<FieldConfig>({rows: 15, cols: 15})
-  const [bombcount, setBombCount] = useState<number>(30);
+  const [fieldSize, setFieldSize] = useState<FieldConfig>({rows: 10, cols: 10})
+  const [bombcount, setBombCount] = useState<number>(8);
   const bombs = create_random_points(fieldSize, bombcount);
 
 
@@ -95,25 +91,29 @@ export default function Bomber() {
 
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">   
-    <h1 className="text-3xl font-bold underline">
-      Bomber
-    </h1>
-    <Grid
-      fieldSize = {fieldSize}
-      bombs = {bombs}
-    />
+    <main className="min-h-screen"> 
+      <div className="flex h-52 bg-gray-500" >  
+        <h1 className="text-3xl font-bold underline">
+          Bomber
+        </h1>
+      </div>
+      <div className="flex justify-center bg-gray-600">
+        <div className="">
+        
+          <Grid
+            fieldSize = {fieldSize}
+            bombs = {bombs}
+          />
+        </div>
 
-    <ConfigComponent 
-      fieldSize = {fieldSize}
-      bombcount={bombcount}
-      setGridSize={setFieldSize}
-      setBombCount={setBombCount}
-    />
-    
-    
-
-    <button onClick={() => setShowItems(!showItems)}>Toggle View</button> 
+        <ConfigComponent 
+          fieldSize = {fieldSize}
+          bombcount={bombcount}
+          setGridSize={setFieldSize}
+          setBombCount={setBombCount}
+        />
+      </div>
+      <button onClick={() => setShowItems(!showItems)}>Toggle View</button> 
     </main>
   )
 }
