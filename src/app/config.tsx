@@ -1,5 +1,6 @@
 import React, {useRef, useState} from "react";
 import { FieldConfig,  Point } from "./types";
+import { generateGridValues } from "./generate";
 
 function ConfigHelper({fieldSize, bombs}: {fieldSize: FieldConfig, bombs: Array<Point>}){
   return( 
@@ -36,7 +37,7 @@ interface FullConfig{
   setGridSize: React.Dispatch<React.SetStateAction<FieldConfig>>
   setBombCount: React.Dispatch<React.SetStateAction<number>>
 }
-export function ConfigComponent({fieldSize, bombcount, setGridSize, setBombCount}: FullConfig){
+export function ConfigComponent({fieldSize, bombcount, setGridSize, setBombCount, setSquareValues}: FullConfig){
     const [showHelper, setShowHelper] = useState<boolean>(false);
     const rowRef = useRef(fieldSize.rows);
     const colRef = useRef(fieldSize.cols);
@@ -46,6 +47,7 @@ export function ConfigComponent({fieldSize, bombcount, setGridSize, setBombCount
     event.preventDefault();
     setGridSize({rows: rowRef.current.value, cols: colRef.current.value})
     console.log(rowRef.current.value, colRef.current.value)
+    setSquareValues(generateGridValues({rows: rowRef.current.value, cols: colRef.current.value}, bombsRef.value))
   }
 
   return (

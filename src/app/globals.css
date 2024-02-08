@@ -32,26 +32,3 @@ body {
   }
 }
 
-.squareButton {
-    background: grey;
-    height: 30px;
-    width: 30px;
-    border: 1px solid #999;
-
-}
-
-.config {
-  background: grey;
-  color: blue;
-  border: 1px solid #999;
-
-  float: left;
-  font-size: 24px;
-  font-weight: bold;
-  line-height: 34px; 
-}
-.config select{
-  color: red;
-  padding-left: 10px;
-
-}
