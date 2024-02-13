@@ -17,13 +17,14 @@ function ConfigHelper({fieldSize, bombs}: {fieldSize: FieldConfig, bombs: Array<
 }
 
 function GridSelect({maxSize, name, fieldref}: {maxSize:string, name: string, fieldref:  React.MutableRefObject<number>}){
-    
-    return (
+  return (
       <>
         <p>
           <label>{name}:</label>
-          <select className="float-right" name={name} id={name} ref = {fieldref}>
-            {Array(parseInt(maxSize)).fill(0).map((_, i) => <option key= {i+1} value={i+1}>{i+1}</option>)}
+          <select className="float-right" name={name} id={name} ref = {fieldref} >
+            {Array(parseInt(maxSize)).fill(0).map((_, i) =>
+              <option key= {i+1} value={i+1}> {i+1} </option>)}
+            <option selected value={fieldref.current.value}>{fieldref.current.value}</option>
           </select>
         </p>
         

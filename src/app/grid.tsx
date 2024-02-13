@@ -1,34 +1,39 @@
-import {useState} from "react";
+import {Dispatch, SetStateAction} from "react";
+import {FieldValue, Point } from "./types";
 
-function Square({input}:{input:string}) {
-    const [value, setValue] = useState("⬜");
-    function handleClick(){
-        setValue(input);
-    }
+function Square({fieldvalue, onSquareClick}:{fieldvalue: FieldValue, onSquareClick:any}) {
     return (
       <button 
         className="bg-grey-20 h-7 w-7 border rounded-t text-red-300" 
-        onClick={handleClick}  
-        onContextMenu={
-            (e) => {
-                e.preventDefault();
-                setValue("🧷");
-            }
-        }
+        onClick={onSquareClick}  
+        onContextMenu={onSquareClick}
         >
-          {value}
+          {fieldvalue.display}
       </button>
   )
 }
 
-export function Grid({squareValues}: {squareValues: string[][]}){
+export function Grid({squareValues, setSquareValue}: {squareValues: FieldValue[][], setSquareValue: Dispatch<SetStateAction<FieldValue[][]>> }){
+  
+  function handleClick(e, point:Point){
+    let currentsquarevalues = squareValues.slice()
+    let newdisplay = null;
+    if (e.type =='contextmenu'){
+          e.preventDefault();
+          newdisplay = "🧷";
+    }
+    else {
+      newdisplay = currentsquarevalues[point.x][point.y].value;
+    }
+    currentsquarevalues[point.x][point.y] = new FieldValue(currentsquarevalues[point.x][point.y].value, newdisplay)
+    setSquareValue(currentsquarevalues)
+  }
   let output = []
   for (let i = 0; i < squareValues.length; i++){
     for (let j = 0; j < squareValues[0].length; j++){
-      output.push(<Square input= {squareValues[i][j]} />)  
+      output.push(<Square fieldvalue = {squareValues[i][j]} onSquareClick={ (e) => handleClick(e,{x:i, y:j})} />)  
     }
     output.push(<br></br>)  
   }
   return (<div>{output}</div>)
 }
-

@@ -1,4 +1,4 @@
-import { FieldConfig, Point } from "./types";
+import { FieldConfig, Point, FieldValue } from "./types";
 
 const neighbour_fields = [
   [1,1],
@@ -21,6 +21,9 @@ function create_random_points(fieldSize:FieldConfig, bombCount: number): Array<P
   }
   return points.filter((element, index) => {return points.indexOf(element)=== index;})
 }
+
+
+
 
 function countBombNeighbors(row:number, col:number, bombs:Array<Point>){
   let isbomb = false
@@ -50,7 +53,7 @@ export function generateGridValues(fieldSize: FieldConfig, bombCount: number){
   for (let i = 0; i < fieldSize.rows; i++){
     let col_values = []
     for (let j = 0; j < fieldSize.cols; j++){
-      col_values.push(countBombNeighbors(i, j, bombs))
+      col_values.push(new FieldValue(countBombNeighbors(i, j, bombs), "⬜"))
     }
     values.push(col_values);
   }

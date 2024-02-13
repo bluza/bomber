@@ -11,6 +11,20 @@ interface Config{
   fieldSize: FieldConfig
   bombs: Array<Point>
 }
+
+class FieldValue{
+  value: string;
+  display: string;
+  
+  constructor(value: string, display: string){
+    this.value = value; 
+    this.display = display;
+  }
+}
+
+export {
+  FieldValue
+}
 export type{
     FieldConfig,
     Point,
